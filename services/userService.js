@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+// ./services/userService.js
 const auth = require('../auth');
+const bcrypt = require('bcrypt');
 var round_salts = 10;
 
 const db = require('../models');
@@ -10,41 +10,75 @@ class UserService{
         this.User = UserModel;
     }
 
-    async createUserSVC(email, date_birth, password) {
-        try {
+    async create(email, data_nasc, password){
+        try{
             const hashpassword = await bcrypt.hash(password, parseInt(round_salts));
-            const newUser = await this.User.createUser({
+            const newUser = await this.User.create({
                 email:email,
-                date_birth:date_birth,
+                data_nasc:data_nasc,
                 password:hashpassword
             });
-            return newUser ? newUser : null;
+            return newUser? newUser : null;
+            
         }
-        catch(error){
+        catch (error){
             throw error;
         }
     }
-    async loginSVC(email, password){
+
+    //Método para retornar todos os usuários
+    async findAll()
+    {
         try{
-            const User = await this.User.findOne({
-                where : {email}
-            });
-            if(User){ 
-               if(await bcrypt.compare(password, User.password)) {
-                    const token = await auth.generateToken(User);
-                    User.dataValues.Token = token;
-                    User.dataValues.password = '';
-               }
-               else{
-                throw new Error("Senha invalida");
-               }
-            }
-            return User ? User:null;
+            const AllUsers = await this.User.findAll();
+            return AllUsers? AllUsers : null;
         }
         catch(error){
             throw error;
         }
+
     }
+
+    //Método para retornar o usuário pelo id
+    async findById(id){
+        try{
+            const User = await this.User.findByPk(id);
+            return User? User: null;
+        }
+        catch(error){
+            throw error;
+        }
+
+    }
+
+   //Método para login
+   async login(email, password){
+    try{
+        const User = await this.User.findOne({
+            where : {email}
+        });
+        //Se o usuário existe, ver se a senha está ok
+        if(User){ 
+           // preencher depois, porque a senha precisa ser criptografada
+           // comparar a senha
+           if(await bcrypt.compare(password, User.password)) {
+            //Gerar o token do user
+                const token = await auth.generateToken(User);
+                User.dataValues.Token = token;
+                User.dataValues.password = '';
+           }
+           else{
+            throw new Error("Senha invalida");
+           }
+        }
+        return User? User:null;
+    }
+    catch(error){
+        throw error;
+    }
+
+}
+
 }
 
 module.exports = UserService;

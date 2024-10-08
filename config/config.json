@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "ecommerce",
+    "username": "projetob1",
     "password": "qwerpoiu",
-    "database": "ecommerce",
+    "database": "projetob1",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

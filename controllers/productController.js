@@ -1,46 +1,61 @@
+
 class ProductController{
-    constructor(UserService){
-        this.userService = UserService;
-    }
+  constructor(ProductService){
+    this.productService = ProductService;
+  }
 
-    async createProduct(req, res){
-        const {name, price, description, stock} = req.body;
-
-        try{
-            await createProductSVC(name, price, description, stock);
-            res.status(200).json({message: "Produto criado"});
-        } catch(err) {
-            res.status(500).json({message: "Erro ao criar produto"});
-        }
+  async createProduct(req,res){
+    const {name, description, price, stock} = req.body;
+    try{
+      const newProduct = await this.productService.create(name, description, price, stock);
+      res.status(200).json(newProduct);
+      res.send();
     }
-
-    async getAllProducts(req, res){
-        try{
-            const allProducts = await getAllProductsSVC();
-            res.status(200).json({allProducts});
-        } catch(err) {
-            res.status(500).json({message: "Erro ao consultar usuários"})
-        }
+    catch(error){
+      res
+        .status(500)
+        .json({error: 'Ocorreu um erro ao gravar o novo produto.'});
     }
+  }
 
-    async updateProduct(req, res){
-        try{
-            const {id} = req.params;
-            const data = req.body;
-            await updateProductSVC(id, data);
-            res.status(200).json({message: "Produto atualizado"});
-        } catch(err) {
-            res.status(500).json({message: "Erro ao atualizar produto"});
-        }
+  async findAllProducts(req,res){
+    try{
+      const AllProducts = await this.productService.findAll();
+      res.status(200).json(AllProducts);
     }
+    catch(error){
+      res
+        .status(500)
+        .json({error: 'Ocorreu um erro ao localizar todos os produtos.'});
+    }
+  }
 
-    async deleteProduct(req, res){
-        try{
-            const {id} = req.params;
-            await deleteProductSVC(id);
-            res.status(200).json({message: "Produto deletado"});
-        } catch(err) {
-            res.status(500).json({message: "Erro ao apagar usuário"});
-        }
+  async updateProduct(req,res){
+    const {id} = req.params;
+    const {name, description, price, stock} = req.body;
+    try{
+      await this.productService.update(id, {name, description, price, stock});
+      res.status(200).json({message: 'Produto atualizado com sucesso.'});
     }
+    catch(error){
+      res
+        .status(500)
+        .json({error: 'Ocorreu um erro ao atualizar o produto.'});
+    }
+  }
+
+  async deleteProduct(req,res){
+    const {id} = req.params;
+    try{
+      await this.productService.delete(id);
+      res.status(200).json({message: 'Produto deletado com sucesso.'});
+    }
+    catch(error){
+      res
+        .status(500)
+        .json({error: 'Ocorreu um erro ao deletar o produto.'});
+    }
+  }
 }
+
+module.exports = ProductController;

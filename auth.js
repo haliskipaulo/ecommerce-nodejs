@@ -1,4 +1,5 @@
-// auth.js jasopn
+// auth.js 
+const { request } = require('express');
 const jwt = require('jsonwebtoken');
 const secret = '123'; //Ponto de vulnerabilidade porque a chave secreta não acessível
 //Recomenda-se gravar em variáveis de ambiente do sistema operacional

@@ -1,57 +1,62 @@
 
+const db = require('../models');
 
 class ProductService{
-    constructor(ProductModel){
-        this.Product = ProductModel;
+  constructor(ProductModel){
+    this.Product = ProductModel;
+  }
+  async create(name, description, price, stock){
+    try {
+      const newProduct = await this.Product.create({
+        name: name,
+        description: description,
+        price: price,
+        stock: stock
+      });
+      return newProduct? newProduct : null;
     }
-
-    async createProductSVC(name, price, description, stock) {
-        var hasProduct = await Product.findOne({ where: { name: name } });
-
-        if(hasProduct) {
-            throw new Error('Este produto já existe!');
-        }
-
-        const newProduct = await this.Product.create({
-            name: name,
-            price: price,
-            description: description,
-            stock: stock
-        });
-        return newProduct;
+    catch (error){
+      throw error;
     }
-
-    async getAllProductsSVC() {
-        const allProducts = await this.Product.findAll();
-        return allProducts;
+  }
+  async findAll(){
+    try{
+      const AllProducts = await this.Product.findAll();
+      return AllProducts? AllProducts : null;
     }
-
-    async updateProductSVC(productID, newData) {
-        const product = await this.Product.findByPk(productID);
-
-        if (!product) {
-            throw new Error('Produto não existe');
-        };
-
-        product.name = newData.name;
-        product.price = newData.price;
-        product.description = newData.description;
-        product.stock = newData.stock;
-
-        await product.save();
-        return product;
+    catch(error){
+      throw error;
     }
+  }
 
-    async deleteProductSVC(productID) {
-        const product = await this.Product.findByPk(productID);
-
-        if (!product) {
-            throw new Error('Produto não existe');
-        };
-        
-        await product.destroy();
-        return(`${product.name} removido`);
+  async update(id, {name, description, price, stock}){
+    try {
+      await this.Product.update({
+        name: name,
+        description: description,
+        price: price,
+        stock: stock
+      },
+      {
+        where: {id: id}
+      });
     }
+    catch (error){
+      throw error;
+    }
+  }
+
+  async delete(id){
+    try {
+      await this.Product.destroy({
+        where: {id: id}
+      });
+    }
+    catch (error){
+      throw error;
+    }
+  }
+
 }
 
 module.exports = ProductService;
